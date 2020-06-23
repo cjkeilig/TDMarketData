@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace TDMarketData.Domain
 {
-    public class Quote
+    public class TDQuote
     {
 
         [JsonProperty("assetType")]

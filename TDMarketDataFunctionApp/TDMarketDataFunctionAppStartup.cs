@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using TDMarketData.Service;
+using AutoMapper;
+using TDMarketData.Service.DataStorage;
 
 [assembly: FunctionsStartup(typeof(TDMarketDataFunctionApp.TDMarketDataFunctionAppStartup))]
 
@@ -24,7 +26,7 @@ namespace TDMarketDataFunctionApp
 
 
             builder.Services.AddOptions();
-            var tdAppSettings = new TDMarketData.Service.TDApiSettings();
+            var tdAppSettings = new TDApiSettings();
             var tdAppConfig = config.GetSection(nameof(TDApiSettings));
             tdAppConfig.Bind(tdAppSettings);
 
@@ -53,6 +55,13 @@ namespace TDMarketDataFunctionApp
             builder.Services.AddSingleton(httpClient);
             builder.Services.AddSingleton(tdAuthToken);
             builder.Services.AddScoped<TDMarketDataService>();
+            builder.Services.AddScoped<MarketDataStorageService>();
+
+            builder.Services.AddAutoMapper(new System.Reflection.Assembly[] { typeof(MarketDataMapperProfile).Assembly });
+
+            var tableStorageConfig = config.GetSection(nameof(TableStorageApiSettings));
+
+            builder.Services.Configure<TableStorageApiSettings>(tableStorageConfig);
 
         }
     }

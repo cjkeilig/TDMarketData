@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 
 namespace TDMarketData.Domain
 {
-    public class OptionChain
+    public class TDOptionChain
     {
         [JsonProperty("symbol")]
         public string Symbol { get; set; }

@@ -10,6 +10,7 @@ namespace TDMarketData.Service
         public string TokenUri { get; set; }
         public string QuoteUri { get; set; }
         public string OptionChainUri { get; set; }
+        public string PriceHistoryUri { get; set; }
         public string ConsumerKey { get; set; }
         public string AuthUrl { get; set; }
         public string AuthCode { get; set; }
@@ -17,6 +18,7 @@ namespace TDMarketData.Service
         public string LastRefreshToken { get; set; }
         public long LastExpires { get; set; }
         public int RefreshTokenBufferPeriodMinutes { get; set; }
+        public string[] SymbolsToTrack { get; set; }
 
     }
 }

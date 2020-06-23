@@ -19,18 +19,18 @@ namespace TDMarketData.Service
             _tdHttpClient = tdHttpClient;
             _tdApiSettings = tdApiSettings.Value;
         }
-        public async Task<OptionChain> GetOptionChain(TDOptionChainRequest tdOptionChainRequest)
+        public async Task<TDOptionChain> GetOptionChain(TDOptionChainRequest tdOptionChainRequest)
         {
             await _tdHttpClient.EnsureAuthenticated();
 
             var optionChainResponse = await _tdHttpClient.GetAsync(_tdApiSettings.OptionChainUri + "?symbol=" + tdOptionChainRequest.Symbol + "&strikeCount=" + tdOptionChainRequest.StrikeCount);
 
-            var optionChain = JsonConvert.DeserializeObject<OptionChain>(await optionChainResponse.Content.ReadAsStringAsync());
+            var optionChain = JsonConvert.DeserializeObject<TDOptionChain>(await optionChainResponse.Content.ReadAsStringAsync());
 
             return optionChain;
         }
 
-        public async Task<List<Quote>> GetQuote(string symbol)
+        public async Task<List<TDQuote>> GetQuote(string symbol)
         {
             await _tdHttpClient.EnsureAuthenticated();
 
@@ -42,11 +42,36 @@ namespace TDMarketData.Service
 
             var jQuotes = jobject.Children().Select(q => q.Children());
 
-            var realQuotes = jQuotes.SelectMany(q => q.Select(qt => qt.ToObject<Quote>()));
+            var realQuotes = jQuotes.SelectMany(q => q.Select(qt => qt.ToObject<TDQuote>()));
 
             return realQuotes.ToList();
         }
 
+        public async Task<List<TDCandle>> GetPriceHistory(TDPriceHistoryRequest tdPriceHistoryRequest)
+        {
+            await _tdHttpClient.EnsureAuthenticated();
+
+            var uri = string.Format(_tdApiSettings.PriceHistoryUri, tdPriceHistoryRequest.Symbol);
+
+            var queryString = "?period=" + tdPriceHistoryRequest.Period + "&periodType=" + tdPriceHistoryRequest.PeriodType + "&frequency=" + tdPriceHistoryRequest.Frequency + "&frequencyType=" + tdPriceHistoryRequest.FrequencyType;
+
+            var fullUri = uri + queryString;
+
+            var response = await _tdHttpClient.GetAsync(fullUri);
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var jContent = JObject.Parse(content);
+
+            var jCandles = jContent.Value<JToken>("candles");
+
+            var candles = jCandles.Select(c => c.ToObject<TDCandle>());
+
+            return candles.ToList();
+
+            
+        }
+            
 
     }
 }
