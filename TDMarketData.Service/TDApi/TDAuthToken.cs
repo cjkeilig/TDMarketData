@@ -13,5 +13,6 @@ namespace TDMarketData.Service
         public long refresh_token_expires_in { get; set; }
         public string token_type { get; set; }
         public DateTime issued_date { get; set; }
+        public DateTime refresh_issued_date { get; set; }
     }
 }

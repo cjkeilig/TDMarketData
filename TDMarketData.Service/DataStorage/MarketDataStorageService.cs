@@ -13,9 +13,9 @@ namespace TDMarketData.Service
     public class MarketDataStorageService
     {
         private readonly TableStorageApiSettings _tableStorageApiSettings;
-        public MarketDataStorageService(IOptions<TableStorageApiSettings> tableStorageApiSettings)
+        public MarketDataStorageService(TableStorageApiSettings tableStorageApiSettings)
         {
-            _tableStorageApiSettings = tableStorageApiSettings.Value;
+            _tableStorageApiSettings = tableStorageApiSettings;
         }
 
         public async Task SaveCandles(IEnumerable<Candle> candles)

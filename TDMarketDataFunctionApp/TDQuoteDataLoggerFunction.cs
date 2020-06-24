@@ -18,19 +18,19 @@ namespace TDMarketDataFunctionApp
         private readonly IMapper _mapper;
         private readonly TDApiSettings _tdApiSettings;
 
-        public TDQuoteDataLoggerFunction(TDMarketDataService tdMarketDataService, MarketDataStorageService marketDataStorageService, IMapper mapper, IOptions<TDApiSettings> tdApiSettings )
+        public TDQuoteDataLoggerFunction(TDMarketDataService tdMarketDataService, MarketDataStorageService marketDataStorageService, IMapper mapper, TDApiSettings tdApiSettings )
         {
             _tdMarketDataService = tdMarketDataService;
             _marketDataStorageService = marketDataStorageService;
             _mapper = mapper;
-            _tdApiSettings = tdApiSettings.Value;
+            _tdApiSettings = tdApiSettings;
 
         }
 
         [FunctionName("TDQuoteDataLoggerFunction")]
         public async Task LogTDQuoteData(
-            //[TimerTrigger("0 0 8 ? * MON-FRI *")] TimerInfo timerInfo,
-            [TimerTrigger("*/1 * * * *")] TimerInfo timerInfo,
+            [TimerTrigger("0 0 8 * * 1-5")] TimerInfo timerInfo,
+            //[TimerTrigger("*/1 * * * *")] TimerInfo timerInfo,
             ILogger log)
         {
             log.LogInformation("Timer trigger function processed a request in LogTDQuoteData");

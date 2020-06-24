@@ -14,10 +14,10 @@ namespace TDMarketData.Service
     {
         private readonly TDHttpClient _tdHttpClient;
         private readonly TDApiSettings _tdApiSettings;
-        public TDMarketDataService(TDHttpClient tdHttpClient, IOptions<TDApiSettings> tdApiSettings)
+        public TDMarketDataService(TDHttpClient tdHttpClient, TDApiSettings tdApiSettings)
         {
             _tdHttpClient = tdHttpClient;
-            _tdApiSettings = tdApiSettings.Value;
+            _tdApiSettings = tdApiSettings;
         }
         public async Task<TDOptionChain> GetOptionChain(TDOptionChainRequest tdOptionChainRequest)
         {
