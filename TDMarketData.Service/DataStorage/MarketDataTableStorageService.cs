@@ -10,12 +10,28 @@ using TDMarketData.Service.DataStorage;
 
 namespace TDMarketData.Service
 {
-    public class MarketDataStorageService
+    public class MarketDataTableStorageService
     {
-        private readonly TableStorageApiSettings _tableStorageApiSettings;
-        public MarketDataStorageService(TableStorageApiSettings tableStorageApiSettings)
+        private readonly StorageApiSettings _tableStorageApiSettings;
+        public MarketDataTableStorageService(StorageApiSettings tableStorageApiSettings)
         {
             _tableStorageApiSettings = tableStorageApiSettings;
+        }
+
+        public async Task SaveOptions(IEnumerable<Option> options)
+        {
+            var optionEntities = options.Select(o => new TableEntityAdapter<Option>(o)).ToList();
+
+            optionEntities.ForEach(c => { c.PartitionKey = c.OriginalEntity.Symbol; c.RowKey = ""; });
+
+            var cloudTable = await CreateTableAsync("optiondata1");
+
+            var symbolGroups = optionEntities.GroupBy(c => c.OriginalEntity.Symbol);
+
+            foreach (var group in symbolGroups)
+            {
+                await BatchInsertRecords(cloudTable, group);
+            }
         }
 
         public async Task SaveCandles(IEnumerable<Candle> candles)
@@ -26,7 +42,12 @@ namespace TDMarketData.Service
 
             var cloudTable = await CreateTableAsync("candledata1");
 
-            await BatchInsertCandleRecords(cloudTable, candleEntities);
+            var symbolGroups = candleEntities.GroupBy(c => c.OriginalEntity.Symbol);
+
+            foreach (var group in symbolGroups)
+            {
+                await BatchInsertRecords(cloudTable, group);
+            }
         }
 
         private async Task<CloudTable> CreateTableAsync(string tableName)
@@ -78,7 +99,7 @@ namespace TDMarketData.Service
             return storageAccount;
         }
 
-        private async Task BatchInsertCandleRecords(CloudTable table,IEnumerable<TableEntity> entities)
+        private async Task BatchInsertRecords(CloudTable table,IEnumerable<TableEntity> entities)
         {
             try
             {

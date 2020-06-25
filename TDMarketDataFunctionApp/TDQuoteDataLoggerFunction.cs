@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using TDMarketData.Domain;
 using TDMarketData.Domain.TableStorageDto;
 using TDMarketData.Service;
+using TDMarketData.Service.DataStorage;
 
 namespace TDMarketDataFunctionApp
 {
@@ -14,11 +15,11 @@ namespace TDMarketDataFunctionApp
     {
 
         private readonly TDMarketDataService _tdMarketDataService;
-        private readonly MarketDataStorageService _marketDataStorageService;
+        private readonly MarketDataFileStorageService _marketDataStorageService;
         private readonly IMapper _mapper;
         private readonly TDApiSettings _tdApiSettings;
 
-        public TDQuoteDataLoggerFunction(TDMarketDataService tdMarketDataService, MarketDataStorageService marketDataStorageService, IMapper mapper, TDApiSettings tdApiSettings )
+        public TDQuoteDataLoggerFunction(TDMarketDataService tdMarketDataService, MarketDataFileStorageService marketDataStorageService, IMapper mapper, TDApiSettings tdApiSettings )
         {
             _tdMarketDataService = tdMarketDataService;
             _marketDataStorageService = marketDataStorageService;
@@ -29,8 +30,8 @@ namespace TDMarketDataFunctionApp
 
         [FunctionName("TDQuoteDataLoggerFunction")]
         public async Task LogTDQuoteData(
-            [TimerTrigger("0 0 8 * * 1-5")] TimerInfo timerInfo,
-            //[TimerTrigger("*/1 * * * *")] TimerInfo timerInfo,
+            [TimerTrigger("0 0 13 * * 1-5")] TimerInfo timerInfo,
+            //[TimerTrigger("0 */5 * * * *")] TimerInfo timerInfo,
             ILogger log)
         {
             log.LogInformation("Timer trigger function processed a request in LogTDQuoteData");
@@ -46,8 +47,6 @@ namespace TDMarketDataFunctionApp
 
                 await _marketDataStorageService.SaveCandles(candleEntities);
             }
-
-
         }
     }
 }

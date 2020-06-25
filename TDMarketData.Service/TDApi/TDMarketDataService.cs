@@ -23,7 +23,14 @@ namespace TDMarketData.Service
         {
             await _tdHttpClient.EnsureAuthenticated();
 
-            var optionChainResponse = await _tdHttpClient.GetAsync(_tdApiSettings.OptionChainUri + "?symbol=" + tdOptionChainRequest.Symbol + "&strikeCount=" + tdOptionChainRequest.StrikeCount);
+            var fullUrl = _tdApiSettings.OptionChainUri + "?symbol=" + tdOptionChainRequest.Symbol;
+
+            if (tdOptionChainRequest.StrikeCount > 0)
+            {
+                fullUrl += "&strikeCount=" + tdOptionChainRequest.StrikeCount;
+            }
+
+            var optionChainResponse = await _tdHttpClient.GetAsync(fullUrl);
 
             var optionChain = JsonConvert.DeserializeObject<TDOptionChain>(await optionChainResponse.Content.ReadAsStringAsync());
 

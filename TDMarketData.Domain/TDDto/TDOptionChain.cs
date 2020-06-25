@@ -52,7 +52,7 @@ namespace TDMarketData.Domain
         public Dictionary<string, Dictionary<string, OptionExpDateMap[]>> PutExpDateMap { get; set; }
     }
 
-    public partial class OptionExpDateMap
+    public class OptionExpDateMap
     {
         [JsonProperty("putCall")]
         public string PutCall { get; set; }

@@ -17,7 +17,6 @@ namespace TDMarketDataFunctionApp
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            Console.WriteLine("in configure");
             var config = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
                                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
@@ -58,31 +57,31 @@ namespace TDMarketDataFunctionApp
             builder.Services.AddSingleton<TDHttpClient>();
             builder.Services.AddSingleton(tdAuthToken);
             builder.Services.AddScoped<TDMarketDataService>();
-            builder.Services.AddScoped<MarketDataStorageService>();
+            builder.Services.AddScoped<MarketDataTableStorageService>();
+            builder.Services.AddScoped<MarketDataFileStorageService>();
+
 
             builder.Services.AddAutoMapper(new System.Reflection.Assembly[] { typeof(MarketDataMapperProfile).Assembly });
 
-            var tableStorageConfig = config.GetSection(nameof(TableStorageApiSettings));
+            var tableStorageConfig = config.GetSection(nameof(StorageApiSettings));
 
-            var tableStorageApiSettings = new TableStorageApiSettings();
+            var tableStorageApiSettings = new StorageApiSettings();
 
             if (tableStorageConfig.Exists())
             {
-                tableStorageConfig.Bind(tableStorageApiSettings);
-            }
-            else
-            {
-                var tableStorageJObject = JObject.Parse(GetEnvironmentVariable(nameof(TableStorageApiSettings)));
-                tableStorageApiSettings = tableStorageJObject.ToObject<TableStorageApiSettings>();
+                if (!string.IsNullOrEmpty(tableStorageConfig.Value))
+                {
+                    var jObject = JObject.Parse(tableStorageConfig.Value);
+                    tableStorageApiSettings = jObject.ToObject<StorageApiSettings>();
+                }
+                else
+                {
+                    tableStorageConfig.Bind(tableStorageApiSettings);
+                }
             }
 
             builder.Services.AddSingleton(tableStorageApiSettings);
 
-        }
-
-        public string GetEnvironmentVariable(string variable)
-        {
-            return Environment.GetEnvironmentVariable(variable);
         }
     }
 }

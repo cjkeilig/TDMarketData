@@ -12,6 +12,7 @@ namespace TDMarketDataFunctionApp
         public MarketDataMapperProfile()
         {
             CreateMap<TDCandle, Candle>().ForMember(td => td.Datetime, opt => opt.MapFrom(src => string.Format("{0:yyyyMMddHHmm}", new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(src.Datetime))));
+            CreateMap<OptionExpDateMap, Option>();
         }
     }
 }

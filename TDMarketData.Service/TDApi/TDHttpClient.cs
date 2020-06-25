@@ -31,7 +31,8 @@ namespace TDMarketData.Service
 
         public async Task EnsureAuthenticated()
         {
-
+            _logger.LogInformation(_tdAuthToken.access_token+ ": " + _tdAuthToken.issued_date);
+            
             if (!string.IsNullOrEmpty(_tdAuthToken.access_token))
             {
                 var minutesTokenValid = (_tdAuthToken.expires_in / 60) - _tdApiSettings.RefreshTokenBufferPeriodMinutes;
@@ -42,6 +43,7 @@ namespace TDMarketData.Service
                 }
             }
 
+            bool refresh = false;
             Dictionary<string, string> authFormData;
             if (string.IsNullOrEmpty(_tdAuthToken.access_token))
             {
@@ -61,6 +63,8 @@ namespace TDMarketData.Service
             {
                 _logger.LogInformation("Refresh access token");
 
+                DefaultRequestHeaders.Authorization = null;
+
                 authFormData = new Dictionary<string, string>
                     {
                         { "client_id", _tdApiSettings.ConsumerKey },
@@ -76,20 +80,31 @@ namespace TDMarketData.Service
                     _logger.LogInformation("Refresh token expired");
                     authFormData.Add("access_type", "offline");
                 }
+
+                refresh = true;
             }
 
             var content = new FormUrlEncodedContent(authFormData);
 
-            _tdAuthToken = await Authenticate(content);
-
+            var token = await Authenticate(content);
             var now = DateTime.Now;
-            _tdAuthToken.issued_date = now;
 
-            if (authFormData.ContainsKey("access_type"))
+            if (!refresh)
             {
+                _tdAuthToken.access_token = token.access_token;
+                _tdAuthToken.expires_in = token.expires_in;
+                _tdAuthToken.refresh_token = token.refresh_token;
+                _tdAuthToken.refresh_token_expires_in = token.refresh_token_expires_in;
+                _tdAuthToken.scope = token.scope;
                 _tdAuthToken.refresh_issued_date = now;
+
+            }
+            else
+            {
+                _tdAuthToken.access_token = token.access_token;
             }
 
+            _tdAuthToken.issued_date = now;
 
             DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _tdAuthToken.access_token);
 
@@ -97,13 +112,25 @@ namespace TDMarketData.Service
 
         public async Task<TDAuthToken> Authenticate(HttpContent content)
         {
-            var response = await PostAsync(_tdApiSettings.TokenUri, content);
+            try
+            {
 
-            var resp = await response.Content.ReadAsStringAsync();
 
-            var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<TDAuthToken>(resp);
+                var response = await PostAsync(_tdApiSettings.TokenUri, content);
 
-            return tokenResponse;
+                var resp = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation("TD auth resp: " + resp);
+                var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<TDAuthToken>(resp);
+                return tokenResponse;
+
+            }
+            catch (Exception ex)
+            {
+                
+                _logger.LogError("{0},{1}", ex.Message, ex.StackTrace);
+                throw;
+            }
+
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TDMarketData.Service.DataStorage
 {
-    public class TableStorageApiSettings
+    public class StorageApiSettings
     {
         public string StorageConnectionString { get; set; }
     }
