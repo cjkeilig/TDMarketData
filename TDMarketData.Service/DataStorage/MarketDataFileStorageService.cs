@@ -61,7 +61,7 @@ namespace TDMarketData.Service.DataStorage
             await SaveToEntitiesToCloudFile(candles, cloudFile);
         }
 
-        public async Task SaveOptions(IEnumerable<Option> options)
+        public async Task SaveOptions(IEnumerable<OptionCandle> options)
         {
             var cloudFile = await GetLastCloudFileByType("option_candle");
 

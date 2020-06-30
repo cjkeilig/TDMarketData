@@ -47,12 +47,12 @@ namespace TDMarketDataFunctionApp
             foreach (var symbol in symbols)
             {
                 var optionChain = await _tdMarketDataService.GetOptionChain(new TDOptionChainRequest { Symbol = symbol });
-                var options = optionChain.PutExpDateMap.SelectMany(k => k.Value.SelectMany(kv => kv.Value));
+                var options = optionChain.PutExpDateMap.Concat(optionChain.CallExpDateMap).SelectMany(k => k.Value.SelectMany(kv => kv.Value));
                 var optionEntities = _mapper.Map<List<Option>>(options);
 
                 optionEntities.ForEach(o => symbolVolumeSnapshot[o.Symbol] = o.TotalVolume);
 
-                await _marketDataStorageService.SaveOptions(optionEntities);
+                //await _marketDataStorageService.SaveOptions(optionEntities);
 
                 if (timerInfo.ScheduleStatus.Last != DateTime.MinValue)
                 {
@@ -61,17 +61,20 @@ namespace TDMarketDataFunctionApp
                         var volume = 0L;
                         volume = o.TotalVolume - symbolVolumeObject.GetValue(o.Symbol).Value<long>();
 
-                        return new Candle
+                        return new OptionCandle
                         {
                             Symbol = o.Symbol,
                             Close = o.Last,
                             Volume = volume,
-                            Datetime = string.Format("{0:yyyyMMddHHmm}", timerInfo.ScheduleStatus.Last)
+                            Datetime = string.Format("{0:yyyyMMddHHmm}", timerInfo.ScheduleStatus.Last),
+                            Volatility = o.Volatility,
+                            OpenInterest = o.OpenInterest,
+                            PercentChange = o.PercentChange
                         };
                     }).ToList();
 
                     if (candles.Count > 0)
-                        await _marketDataFileStorageService.SaveCandles(candles);
+                        await _marketDataFileStorageService.SaveOptions(candles);
 
                 }
             }
