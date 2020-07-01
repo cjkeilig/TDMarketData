@@ -11,6 +11,7 @@ namespace TDMarketData.Service
         public string QuoteUri { get; set; }
         public string OptionChainUri { get; set; }
         public string PriceHistoryUri { get; set; }
+        public string UserPrincipalsUri { get; set; }
         public string ConsumerKey { get; set; }
         public string AuthUrl { get; set; }
         public string AuthCode { get; set; }

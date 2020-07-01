@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TDMarketData.Domain", "TDMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TDMarketData.Service", "TDMarketData.Service\TDMarketData.Service.csproj", "{7EF01F22-C81B-472F-B838-12F2291E8B9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TDMarketData.Test", "TDMarketData.Test\TDMarketData.Test.csproj", "{51DC79C0-8C01-4EC4-8AB2-468650D63385}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TDMarketData.Test", "TDMarketData.Test\TDMarketData.Test.csproj", "{51DC79C0-8C01-4EC4-8AB2-468650D63385}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TDMarketData.StreamingWebApp", "TDMarketData.StreamingWebApp\TDMarketData.StreamingWebApp.csproj", "{CFFEEA58-B325-4505-A215-4B2B29985652}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{51DC79C0-8C01-4EC4-8AB2-468650D63385}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51DC79C0-8C01-4EC4-8AB2-468650D63385}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51DC79C0-8C01-4EC4-8AB2-468650D63385}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFFEEA58-B325-4505-A215-4B2B29985652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFFEEA58-B325-4505-A215-4B2B29985652}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFFEEA58-B325-4505-A215-4B2B29985652}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFFEEA58-B325-4505-A215-4B2B29985652}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
