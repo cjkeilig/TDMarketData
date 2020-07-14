@@ -88,5 +88,62 @@ namespace TDMarketData.Service.Utilities
             var dateDiff = date.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
             return (long)dateDiff;
         }
+
+        public static JObject GetTimeSaleStreamingRequest(string[] vs, string accountId, string source)
+        {
+            var streamingRequest = new TDStreamingRequest
+            {
+                Service = "TIMESALE_OPTIONS",
+                RequestId = "3",
+                Command = "SUBS",
+                Account = accountId,
+                Source = source,
+                Parameters = new Dictionary<string, string>
+                {
+                    { "keys", "SPY_200706C313" }, //string.Join(",", vs)
+                    { "fields", "0,1,2,3,4" }
+                }
+            };
+
+            return JObject.FromObject(streamingRequest);
+        }
+
+        public static JObject GetLevel2OptionStreamingRequest(string[] vs, string accountId, string source)
+        {
+            var streamingRequest = new TDStreamingRequest
+            {
+                Service = "OPTION_BOOK",
+                RequestId = "3",
+                Command = "SUBS",
+                Account = accountId,
+                Source = source,
+                Parameters = new Dictionary<string, string>
+                {
+                    { "keys", "SPY_070620C313" }, //string.Join(",", vs)
+                    { "fields", "0,1,2,3,4" }
+                }
+            };
+
+            return JObject.FromObject(streamingRequest);
+        }
+
+        public static JObject GetLevel1OptionStreamingRequest(string[] vs, string accountId, string source)
+        {
+            var streamingRequest = new TDStreamingRequest
+            {
+                Service = "OPTION",
+                RequestId = "3",
+                Command = "SUBS",
+                Account = accountId,
+                Source = source,
+                Parameters = new Dictionary<string, string>
+                {
+                    { "keys", "SPY_070620C313" }, //string.Join(",", vs)
+                    { "fields", "0,4" }
+                }
+            };
+
+            return JObject.FromObject(streamingRequest);
+        }
     }
 }

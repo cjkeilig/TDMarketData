@@ -47,7 +47,7 @@ namespace TDMarketData.Service.Extensions
             services.AddSingleton(tdAuthToken);
             services.AddScoped<TDMarketDataService>();
             services.AddScoped<MarketDataTableStorageService>();
-            services.AddScoped<MarketDataFileStorageService>();
+            services.AddSingleton<MarketDataFileStorageService>();
             services.AddScoped<TDUserPrincipalService>();
 
             var tableStorageConfig = config.GetSection(nameof(StorageApiSettings));

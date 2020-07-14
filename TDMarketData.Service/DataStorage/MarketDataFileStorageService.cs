@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.File;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace TDMarketData.Service.DataStorage
 {
     public class MarketDataFileStorageService : IMarketDataFileStorageService
     {
+        private const string TokenFileName = "token.json";
         private StorageApiSettings _storageApiSettings;
         private string symbolVolumeFileName = "symbol_volume_snapshot.json";
 
@@ -100,6 +102,43 @@ namespace TDMarketData.Service.DataStorage
             }
 
             cloudFile.CloseAllHandlesSegmented();
+        }
+
+        public async Task SaveToken(TDAuthToken tDAuthToken)
+        {
+            var cloudFile = await GetCloudFile(TokenFileName);
+
+
+            var tokenString = JsonConvert.SerializeObject(tDAuthToken);
+
+            await cloudFile.ResizeAsync(tokenString.Length);
+
+            var bytes = tokenString.Length;
+
+            var ranges = await cloudFile.ListRangesAsync();
+            ranges.ToList().ForEach(r => cloudFile.ClearRange(r.StartOffset, r.EndOffset));
+
+            var cloudFileStream = await cloudFile.OpenWriteAsync(bytes);
+            await cloudFileStream.WriteAsync(Encoding.UTF8.GetBytes(tokenString), 0, bytes);
+            cloudFileStream.Close();
+
+        }
+
+        public async Task<TDAuthToken> GetToken()
+        {
+            var cloudFile = await GetCloudFile(TokenFileName);
+
+            if (cloudFile.Properties.Length > 0)
+            {
+                var tokenString = await cloudFile.DownloadTextAsync();
+                var token = JsonConvert.DeserializeObject<TDAuthToken>(tokenString);
+
+                return token;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private async Task<CloudFile> GetLastCloudFileByType(string fileType)

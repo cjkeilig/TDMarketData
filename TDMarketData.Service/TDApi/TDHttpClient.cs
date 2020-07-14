@@ -5,17 +5,20 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TDMarketData.Service.DataStorage;
 
 namespace TDMarketData.Service
 {
     public class TDHttpClient : HttpClient
     {
+        private readonly MarketDataFileStorageService _marketDataFileStorageService;
         private readonly TDApiSettings _tdApiSettings;
         private TDAuthToken _tdAuthToken;
         private readonly ILogger<TDHttpClient> _logger;
 
-        public TDHttpClient(TDApiSettings tdApiSettings, TDAuthToken tdAuthToken, ILogger<TDHttpClient> logger)
+        public TDHttpClient(TDApiSettings tdApiSettings, TDAuthToken tdAuthToken, ILogger<TDHttpClient> logger, MarketDataFileStorageService marketDataFileStorageService)
         {
+            _marketDataFileStorageService = marketDataFileStorageService;
             _tdApiSettings = tdApiSettings;
             _tdAuthToken = tdAuthToken;
             _logger = logger;
@@ -31,18 +34,52 @@ namespace TDMarketData.Service
 
         public async Task EnsureAuthenticated()
         {
-            _logger.LogInformation(_tdAuthToken.access_token+ ": " + _tdAuthToken.issued_date);
-            
+            _logger.LogInformation(_tdAuthToken.access_token + ": " + _tdAuthToken.issued_date);
+
             if (!string.IsNullOrEmpty(_tdAuthToken.access_token))
             {
-                var minutesTokenValid = (_tdAuthToken.expires_in / 60) - _tdApiSettings.RefreshTokenBufferPeriodMinutes;
-                var minutesTokenAlive = (DateTime.Now - _tdAuthToken.issued_date).Minutes;
-                if (minutesTokenAlive < minutesTokenValid)
-                {
+                if (TokenStillValid(_tdAuthToken, _tdApiSettings))
                     return;
-                }
             }
 
+            var tokenExists = await CheckExistingAccessToken();
+            if (!tokenExists)
+                await GetNewAccessToken();
+
+        }
+
+        private async Task<bool> CheckExistingAccessToken()
+        {
+            var token = await _marketDataFileStorageService.GetToken();
+            if (token != null)
+            {
+
+                if (!TokenStillValid(token, _tdApiSettings))
+                    return false;
+
+                _tdAuthToken.access_token = token.access_token;
+                _tdAuthToken.expires_in = token.expires_in;
+                _tdAuthToken.issued_date = token.issued_date;
+                _tdAuthToken.refresh_issued_date = token.refresh_issued_date;
+                _tdAuthToken.refresh_token = token.refresh_token;
+                _tdAuthToken.scope = token.scope;
+                _tdAuthToken.token_type = token.token_type;
+                _tdAuthToken.refresh_token_expires_in = token.refresh_token_expires_in;
+
+                DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _tdAuthToken.access_token);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+
+        }
+
+        private async Task GetNewAccessToken()
+        {
             bool refresh = false;
             Dictionary<string, string> authFormData;
             if (string.IsNullOrEmpty(_tdAuthToken.access_token))
@@ -108,6 +145,21 @@ namespace TDMarketData.Service
 
             DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _tdAuthToken.access_token);
 
+            await _marketDataFileStorageService.SaveToken(_tdAuthToken);
+        }
+
+        private bool TokenStillValid(TDAuthToken tdAuthToken, TDApiSettings tdApiSettings)
+        {
+            var minutesTokenValid = (tdAuthToken.expires_in / 60) - tdApiSettings.RefreshTokenBufferPeriodMinutes;
+            var minutesTokenAlive = (DateTime.Now - tdAuthToken.issued_date).Minutes;
+            if (minutesTokenAlive < minutesTokenValid)
+            {
+                return true;
+            } 
+            else
+            {
+                return false;
+            }
         }
 
         public async Task<TDAuthToken> Authenticate(HttpContent content)

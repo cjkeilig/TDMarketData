@@ -13,6 +13,7 @@ using TDMarketData.Domain;
 using TDMarketData.Domain.TableStorageDto;
 using TDMarketData.Service;
 using TDMarketData.Service.DataStorage;
+using TDMarketData.Service.Utilities;
 
 namespace TDMarketDataFunctionApp
 {
@@ -40,6 +41,8 @@ namespace TDMarketDataFunctionApp
             ILogger log)
         {
             log.LogInformation("Timer trigger function processed a request in LogTDOptionData");
+
+            await TDUtilities.WaitForAuth();
 
             var symbols = _tdApiSettings.SymbolsToTrack;
             var symbolVolumeObject = await _marketDataFileStorageService.GetSymbolVolumeSnapshot();

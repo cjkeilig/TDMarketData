@@ -8,6 +8,7 @@ using TDMarketData.Domain;
 using TDMarketData.Domain.TableStorageDto;
 using TDMarketData.Service;
 using TDMarketData.Service.DataStorage;
+using TDMarketData.Service.Utilities;
 
 namespace TDMarketDataFunctionApp
 {
@@ -34,7 +35,10 @@ namespace TDMarketDataFunctionApp
             //[TimerTrigger("0 */5 * * * *")] TimerInfo timerInfo,
             ILogger log)
         {
+
             log.LogInformation("Timer trigger function processed a request in LogTDQuoteData");
+
+            await TDUtilities.WaitForAuth();
 
             var symbols = _tdApiSettings.SymbolsToTrack;
 
