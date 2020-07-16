@@ -37,7 +37,7 @@ namespace TDMarketDataFunctionApp
 
         [FunctionName("TDOptionDataLoggerFunction")]
         public async Task LogTDOptionData(
-            [TimerTrigger("0 */5 13-21 * * *")] TimerInfo timerInfo,
+            [TimerTrigger("0 */5 12-22 * * *")] TimerInfo timerInfo,
             ILogger log)
         {
             log.LogInformation("Timer trigger function processed a request in LogTDOptionData");
@@ -62,7 +62,14 @@ namespace TDMarketDataFunctionApp
                     var candles = options.Where(o => symbolVolumeObject.TryGetValue(o.Symbol, StringComparison.OrdinalIgnoreCase, out JToken jToken)).Select(o =>
                     {
                         var volume = 0L;
-                        volume = o.TotalVolume - symbolVolumeObject.GetValue(o.Symbol).Value<long>();
+                        var previousValue = symbolVolumeObject.GetValue(o.Symbol).Value<long>();
+
+                        var currentValue = o.TotalVolume;
+
+                        if (o.TotalVolume != 0)
+                        {
+                            volume = o.TotalVolume - previousValue;
+                        }
 
                         return new OptionCandle
                         {
