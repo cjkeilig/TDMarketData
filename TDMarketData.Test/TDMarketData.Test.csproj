@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TDMarketData.Helpers\TDMarketData.Helpers.csproj" />
     <ProjectReference Include="..\TDMarketData.Service\TDMarketData.Service.csproj" />
   </ItemGroup>
 

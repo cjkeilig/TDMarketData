@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TDMarketData.OptionsConsole": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "WEBSITE_CONTENTSHARE": "tdmarketdatafunctionapp20200623202110"
+      }
+    }
+  }
+}

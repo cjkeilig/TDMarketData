@@ -10,6 +10,7 @@ namespace TDMarketData.Service.Utilities
 {
     public static class TDStreamingUtilities
     {
+        public static int ReqId { get; set; }
         public static JObject GetAdminLoginRequest(TDUserPrincipal userPrincipal)
         {
             var account = userPrincipal.Accounts[0];
@@ -41,7 +42,7 @@ namespace TDMarketData.Service.Utilities
                 Command = "LOGIN",
                 Account = account.AccountId,
                 Source = userPrincipal.StreamerInfo.AppId,
-                RequestId = "1",
+                RequestId = ReqId.ToString(),
                 Parameters = new Dictionary<string, string>
                     {
                         { "credential",  DictionaryToQueryString(credentialDict) },
@@ -50,6 +51,7 @@ namespace TDMarketData.Service.Utilities
                     }
             };
 
+            ReqId++;
             return JObject.FromObject(streamingRequest);
         }
 
@@ -58,7 +60,7 @@ namespace TDMarketData.Service.Utilities
             var streamingRequest = new TDStreamingRequest
             {
                 Service = "QUOTE",
-                RequestId = "2",
+                RequestId = ReqId.ToString(),
                 Command = "SUBS",
                 Account = account,
                 Source = source,
@@ -68,6 +70,8 @@ namespace TDMarketData.Service.Utilities
                     { "fields", "0,1,2,3,4,5,6,7,8" }
                 }
             };
+
+            ReqId++;
 
             return JObject.FromObject(streamingRequest);
         }
@@ -86,24 +90,32 @@ namespace TDMarketData.Service.Utilities
             var date = DateTime.Parse(timestamp);
 
             var dateDiff = date.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-            return (long)dateDiff;
+
+            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime tokenDate = Convert.ToDateTime(timestamp);
+            TimeSpan tokenEpoch = tokenDate.ToUniversalTime() - epoch;
+            long timestamp2 = (long)Math.Floor(tokenEpoch.TotalMilliseconds);
+
+            return timestamp2;
         }
 
-        public static JObject GetTimeSaleStreamingRequest(string[] vs, string accountId, string source)
+        public static JObject GetEquityTimeSaleStreamingRequest(string[] vs, string accountId, string source)
         {
             var streamingRequest = new TDStreamingRequest
             {
-                Service = "TIMESALE_OPTIONS",
-                RequestId = "3",
+                Service = "TIMESALE_EQUITY",
+                RequestId = ReqId.ToString(),
                 Command = "SUBS",
                 Account = accountId,
                 Source = source,
                 Parameters = new Dictionary<string, string>
                 {
-                    { "keys", "SPY_200706C313" }, //string.Join(",", vs)
+                    { "keys", string.Join(",", vs) },
                     { "fields", "0,1,2,3,4" }
                 }
             };
+
+            ReqId++;
 
             return JObject.FromObject(streamingRequest);
         }
@@ -113,7 +125,7 @@ namespace TDMarketData.Service.Utilities
             var streamingRequest = new TDStreamingRequest
             {
                 Service = "OPTION_BOOK",
-                RequestId = "3",
+                RequestId = ReqId.ToString(),
                 Command = "SUBS",
                 Account = accountId,
                 Source = source,
@@ -124,24 +136,28 @@ namespace TDMarketData.Service.Utilities
                 }
             };
 
+            ReqId++;
+
             return JObject.FromObject(streamingRequest);
         }
 
-        public static JObject GetLevel1OptionStreamingRequest(string[] vs, string accountId, string source)
+        public static JObject GetLevel1OptionStreamingRequest(string[] symbol, string accountId, string source)
         {
             var streamingRequest = new TDStreamingRequest
             {
                 Service = "OPTION",
-                RequestId = "3",
+                RequestId = ReqId.ToString(),
                 Command = "SUBS",
                 Account = accountId,
                 Source = source,
                 Parameters = new Dictionary<string, string>
                 {
-                    { "keys", "SPY_070620C313" }, //string.Join(",", vs)
-                    { "fields", "0,4" }
+                    { "keys", string.Join(",", symbol) },
+                    { "fields", "0,2,3,4,20,21" }
                 }
             };
+
+            ReqId++;
 
             return JObject.FromObject(streamingRequest);
         }

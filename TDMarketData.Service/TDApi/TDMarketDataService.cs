@@ -30,9 +30,24 @@ namespace TDMarketData.Service
                 fullUrl += "&strikeCount=" + tdOptionChainRequest.StrikeCount;
             }
 
+            
             var optionChainResponse = await _tdHttpClient.GetAsync(fullUrl);
 
-            var optionChain = JsonConvert.DeserializeObject<TDOptionChain>(await optionChainResponse.Content.ReadAsStringAsync());
+
+            if (optionChainResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await _tdHttpClient.GetNewAccessToken();
+            }
+
+            var contentStr = await optionChainResponse.Content.ReadAsStringAsync();
+
+
+            var optionChain = JsonConvert.DeserializeObject<TDOptionChain>(contentStr);
+
+            if (optionChain.PutExpDateMap.Count == 0 && optionChain.CallExpDateMap.Count == 0)
+            {
+                Console.WriteLine(contentStr);
+            }
 
             return optionChain;
         }

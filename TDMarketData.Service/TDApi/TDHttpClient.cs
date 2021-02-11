@@ -54,9 +54,6 @@ namespace TDMarketData.Service
             if (token != null)
             {
 
-                if (!TokenStillValid(token, _tdApiSettings))
-                    return false;
-
                 _tdAuthToken.access_token = token.access_token;
                 _tdAuthToken.expires_in = token.expires_in;
                 _tdAuthToken.issued_date = token.issued_date;
@@ -65,6 +62,9 @@ namespace TDMarketData.Service
                 _tdAuthToken.scope = token.scope;
                 _tdAuthToken.token_type = token.token_type;
                 _tdAuthToken.refresh_token_expires_in = token.refresh_token_expires_in;
+
+                if (!TokenStillValid(token, _tdApiSettings))
+                    return false;
 
                 DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _tdAuthToken.access_token);
 
@@ -78,11 +78,11 @@ namespace TDMarketData.Service
 
         }
 
-        private async Task GetNewAccessToken()
+        public async Task GetNewAccessToken()
         {
             bool refresh = false;
             Dictionary<string, string> authFormData;
-            if (string.IsNullOrEmpty(_tdAuthToken.access_token))
+            if (string.IsNullOrEmpty(_tdAuthToken.refresh_token))
             {
                 _logger.LogInformation("Access token from auth code");
 
@@ -151,7 +151,7 @@ namespace TDMarketData.Service
         private bool TokenStillValid(TDAuthToken tdAuthToken, TDApiSettings tdApiSettings)
         {
             var minutesTokenValid = (tdAuthToken.expires_in / 60) - tdApiSettings.RefreshTokenBufferPeriodMinutes;
-            var minutesTokenAlive = (DateTime.Now - tdAuthToken.issued_date).Minutes;
+            var minutesTokenAlive = (DateTime.Now - tdAuthToken.issued_date).TotalMinutes;
             if (minutesTokenAlive < minutesTokenValid)
             {
                 return true;
@@ -166,7 +166,6 @@ namespace TDMarketData.Service
         {
             try
             {
-
 
                 var response = await PostAsync(_tdApiSettings.TokenUri, content);
 

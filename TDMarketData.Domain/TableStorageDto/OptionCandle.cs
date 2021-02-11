@@ -9,5 +9,10 @@
         public double Volatility { get; set; }
         public long OpenInterest { get; set; }
         public double PercentChange { get; set; }
+        public string BidAskSize { get; set; }
+        public double Bid { get; set; }
+        public double Ask { get; set; }
+        public double UnderlyingPrice { get; set; }
+
     }
 }

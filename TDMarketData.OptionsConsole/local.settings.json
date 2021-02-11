@@ -1,0 +1,26 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=storageck;AccountKey=RqmrwmPsarXJ0tuu9bjOeE069rI4/eQu1t7k+c6nFRYjKyg63lCuVpdAqjrHoKqTy+aGdUjb5qJQDRSKAO7/RA==;EndpointSuffix=core.windows.net"
+  },
+  "StorageApiSettings": {
+    "StorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=storageck;AccountKey=RqmrwmPsarXJ0tuu9bjOeE069rI4/eQu1t7k+c6nFRYjKyg63lCuVpdAqjrHoKqTy+aGdUjb5qJQDRSKAO7/RA==;EndpointSuffix=core.windows.net"
+  },
+  "TDApiSettings": {
+
+    "ConsumerKey": "OUC1NOVV3JTHYXJAQL5Z6962DTCNUWIZ",
+    "TokenUri": "oauth2/token",
+    "QuoteUri": "marketdata/{0}/quotes",
+    "OptionChainUri": "marketdata/chains",
+    "PriceHistoryUri": "marketdata/{0}/pricehistory",
+    "UserPrincipalsUri": "userprincipals",
+    "BaseAddress": "https://api.tdameritrade.com/v1/",
+    "AuthUrl": "https://auth.tdameritrade.com/auth?response_type=code&redirect_uri=https%3A%2F%2F127.0.0.1&client_id={0}%40AMER.OAUTHAP",
+    "AuthCode": "kW40Ajx5CGsUWmZDWV/VfW5oBWd1jw5AawIKgTV6CtbM8bCD1IhQrONoJRnQj+VnYHd0tttg+VyXEEkboVuj47qHWj60MUYcRkGjNz8jnj5RG8vccR56FQLNEQN1RZvFXyHIX3BXN4g23ow7oZPGe5+MOCajyBJP+ZKIw/Vdrc8RGFZjK2LIyeoaM7vyW7SSVv4v5paIMoQv6aer97w5YYU0+YeIPjl6dokXlwBHMar56oKLUHzfgTYta2eE1PHRIwGdTB8JzTwXv+O3ljhP1KXM/p6xi/iHQO39xHOTEwHjOe4Weu3tV1Auyzfok8lvU6pGfF4rwZudFK1xcTU3hrp2Wi4kZ1BaENBovXCI9zifHuWz/vWU9lrIQQ+RNS/W3odtppxUllPt3hpjQvjgyKSSC6ESvlQ5KGtIgqIMRqamfKoR8rC5ZqSBEkK100MQuG4LYrgoVi/JHHvl2ywjbp3eLIRIp44Y5cE3w2YxPrvEygOEHbv8LV28cx1NlqQooGWJ/8sBerUoWrfx03NvluDn4kDS3tLSpofq06Adg2zihKaA/2fdJpQnG9xtNRiSc/9VFkqr/bx4zjCeK5YuHOoq0UhjTcA24jAC7YM3mkUi0VUEr9R+KnnVUREc05JWZqR0HpFi18BKVeCgk1DB6vCJ4aKEV+tAxqJAmTSKiU8vq2u+Eh6Fq7Wamb9rLiX/tVI3d8tGAFiA2On1Adl1w/387RG732c1KNIHftZeY6WI2te++PBbG2GSIuEcQyVTny4D1fasbPn/qXI9MirRzXcXugOzsYCbwtOmmvI5HAYV3jlxNwfr0KHcEjl7bV+T3rAE8sNlLlrSACsLSSnusm7t2ktzhhPHU/IVh5IzexX8a/xvAqbkUfXvLkKkNswBWZsZ28NuDZA=212FD3x19z9sWBHDJACbC00B75E",
+    "LastAccessToken": "",
+    "LastRefreshToken": "",
+    "LastExpires": 1800,
+    "RefreshTokenBufferPeriodMinutes": 10,
+    "SymbolsToTrack": [ "SPY", "MSFT" ]
+  }
+}

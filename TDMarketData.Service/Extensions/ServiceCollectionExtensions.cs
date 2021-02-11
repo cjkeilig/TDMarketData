@@ -13,9 +13,11 @@ namespace TDMarketData.Service.Extensions
     public static class ServiceCollectionExtensions
     {
 
-        public static void RegisterServices(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration config)
         {
+
             var tdAppSettings = new TDApiSettings();
+
             var tdAppConfig = config.GetSection("TDApiSettings");
 
             if (tdAppConfig.Exists())
@@ -68,6 +70,8 @@ namespace TDMarketData.Service.Extensions
             }
 
             services.AddSingleton(tableStorageApiSettings);
+
+            return services;
         }
     }
 }

@@ -16,7 +16,7 @@ using TDMarketData.Domain.TableStorageDto;
 
 namespace TDMarketData.Service.DataStorage
 {
-    public class MarketDataFileStorageService : IMarketDataFileStorageService
+    public class MarketDataFileStorageService : IMarketDataFileStorageService1
     {
         private const string TokenFileName = "token.json";
         private StorageApiSettings _storageApiSettings;
@@ -195,7 +195,7 @@ namespace TDMarketData.Service.DataStorage
             CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
 
             // Get a reference to the file share we created previously.
-            CloudFileShare share = fileClient.GetShareReference(Environment.GetEnvironmentVariable("WEBSITE_CONTENTSHARE"));
+            CloudFileShare share = fileClient.GetShareReference("tdmarketdatafunctionapp20200623202110");
 
             // Ensure that the share exists.
             if (share.Exists())
